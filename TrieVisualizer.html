@@ -23,16 +23,20 @@
 
 			let camera = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
 			camera.position.y = 0;
-			camera.position.z = 5;
+			camera.position.z = 30;
 			camera.position.x = 0;
 			scene.add(camera);
 
 			let root = new TrieNode(0, new THREE.Vector3(0, 0, 0), scene);
+			root.insertWord(root, "mew", scene);
 
 			function render()
 			{
 				renderer.render(scene, camera);
 			}
+
+			let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+			cameraControls.addEventListener("change", render, false);
 
 			render();
 
