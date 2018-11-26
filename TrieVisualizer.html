@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Trie Visualizer</title>
+		<script src="https://threejs.org/build/three.js"></script>
+		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+		<script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+		<script src="https://threejs.org/examples/js/loaders/MTLLoader.js"></script>
+		<script type="text/javascript" src="./Scripts/TrieNode.js"></script>
+		<script type="text/javascript">
+			function mainFunction()
+			{
+			let renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setPixelRatio(window.devicePixelRatio);
+
+			renderer.setClearColor(0x000000, 1);
+			document.body.appendChild(renderer.domElement);
+
+			let scene = new THREE.Scene();
+
+			let aspect = window.innerWidth / window.innerHeight;
+
+			let camera = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
+			camera.position.y = 0;
+			camera.position.z = 5;
+			camera.position.x = 0;
+			scene.add(camera);
+
+			let root = new TrieNode(0, new THREE.Vector3(0, 0, 0), scene);
+
+			function render()
+			{
+				renderer.render(scene, camera);
+			}
+
+			render();
+
+			function resize()
+			{
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				render();
+			}
+
+			window.addEventListener("resize", resize, false);
+		}
+	</script>
+	</head>
+	<body onload="mainFunction();">
+	</body>
+</html>
