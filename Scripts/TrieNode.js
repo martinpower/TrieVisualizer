@@ -17,32 +17,32 @@ class TrieNode
 	insertWord(root, word, scene, idx)
 	{
 		// at root of trie
-		if(typeof idx == undefined)
-			return insertWord(root, word, scene, 0);
-		console.log(word);
+		if(idx == undefined)
+			return root.insertWord(root, word, scene, 0);
+		console.log(idx);
 		console.log(word.charAt(idx));
-		if(idx == word.length)
-			return undefined;
 
 		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
 		let coord = root.computePosition(root, ch);
 
 		if(root.children[ch] != undefined)
 		{
-			root.insertWord(root.children[ch], word, scene, idx + 1);
+			root.insertWord(root.children[ch], word, scene, ++idx);
 		}
 		else
 		{
 			root.children[ch] = new TrieNode(0, coord, scene);
 		}
 
+		if(idx == word.length)
+			return undefined;
 		if(idx == word.length - 1)
 		{
 			root.children[ch].count++;
 			return root.children[ch];
 		}
 
-		//root.insertWord(root.children[ch], word, scene, idx + 1);
+		return root.insertWord(root.children[ch], word, scene, ++idx);
 	}
 
 	computePosition(root, ch)
@@ -50,8 +50,10 @@ class TrieNode
 		let pos = new THREE.Vector3();
 		pos.y = -4;
 		
-		pos.x = Math.cos((1 / 25) * root.coord.getComponent(0));
-		pos.z = Math.sin((1 / 25) * root.coord.getComponent(2));
+		pos.x = Math.cos(((2 * Math.PI) / 25) * root.coord.getComponent(0));
+		console.log("x: " + pos.x);
+		pos.z = Math.sin(((2 * Math.PI) / 25) * root.coord.getComponent(2));
+		console.log("z: " + pos.z);
 
 		return pos;
 	}
