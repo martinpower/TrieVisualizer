@@ -1,8 +1,9 @@
 class TrieNode
 {
-	constructor(count, coord, scene, ch)
+	constructor(count, coord, scene, ch, lvl)
 	{
 		this.count = 0;
+		this.lvl = lvl;
 		this.children = new Array(26);
 		this.child_lines = new Array(26);
 
@@ -16,20 +17,20 @@ class TrieNode
 		// at root of trie
 		if(idx == undefined)
 		{
-			console.log(word);
 			return this.insertWord(word, scene, 0);
 		}
 
 		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
-		let coord = this.computePosition(ch);
 
 		if(this.children[ch] != undefined)
 		{
 			this.children[ch].insertWord(word, scene, ++idx);
+			return this.children[ch];
 		}
 		else
 		{
-			this.children[ch] = new TrieNode(0, coord, scene, ch);
+			let coord = this.computePosition(ch);
+			this.children[ch] = new TrieNode(0, coord, scene, ch, this.lvl + 1);
 			this.child_lines[ch] = this.createLine(this.children[ch], scene);
 		}
 
@@ -49,11 +50,10 @@ class TrieNode
 		let pos = new THREE.Vector3();
 		pos.y = this.coord.getComponent(1) - 4;
 
-		let map = ((2 * Math.PI) / 25) * ch;
-		pos.x = this.coord.getComponent(0) + 3 * Math.sin(map);
-		pos.z = this.coord.getComponent(2) + 3 * Math.cos(map);
+		let map = ((Math.PI) / 25) * ch;
+		pos.x = (this.coord.getComponent(0) + 1) + 4 * Math.sin(2 * map);
+		pos.z = (this.coord.getComponent(2) + 1) + 4 * Math.cos(2 * map);
 
-		console.log(pos.x + ", " + pos.z);
 		return pos;
 	}
 
