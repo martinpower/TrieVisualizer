@@ -1,7 +1,10 @@
 class TrieNode
 {
-	constructor(count, coord, scene)
+	constructor(count, coord, scene, ch)
 	{
+		console.log("coord x: " + coord.getComponent(0));
+		console.log("coord y: " + coord.getComponent(1));
+		console.log("coord z: " + coord.getComponent(2));
 		this.count = 0;
 		this.children = new Array(26);
 		this.child_lines = new Array(26);
@@ -10,51 +13,66 @@ class TrieNode
 		cyl.applyMatrix(new THREE.Matrix4().makeTranslation(coord.getComponent(0), coord.getComponent(1), coord.getComponent(2)));
 		this.coord = coord;
 
-		this.cylinder = new THREE.Mesh(cyl, new THREE.MeshBasicMaterial({color: 0xFFFF00}));
+		let col = 10000 + (10000000 / 25) * ch;
+		this.cylinder = new THREE.Mesh(cyl, new THREE.MeshBasicMaterial({color: col}));
 		scene.add(this.cylinder);
 	}
 
-	insertWord(root, word, scene, idx)
+	insertWord(word, scene, idx)
 	{
 		// at root of trie
 		if(idx == undefined)
-			return root.insertWord(root, word, scene, 0);
+			return this.insertWord(word, scene, 0);
 		console.log(idx);
 		console.log(word.charAt(idx));
 
 		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
-		let coord = root.computePosition(root, ch);
+		let coord = this.computePosition(ch);
 
-		if(root.children[ch] != undefined)
+		if(this.children[ch] != undefined)
 		{
-			root.insertWord(root.children[ch], word, scene, ++idx);
+			this.children[ch].insertWord(word, scene, ++idx);
 		}
 		else
 		{
-			root.children[ch] = new TrieNode(0, coord, scene);
+			this.children[ch] = new TrieNode(0, coord, scene, ch);
+			this.child_lines[ch] = this.createLine(this.children[ch]);
+			scene.add(this.child_lines[ch]);
 		}
 
 		if(idx == word.length)
 			return undefined;
 		if(idx == word.length - 1)
 		{
-			root.children[ch].count++;
-			return root.children[ch];
+			this.children[ch].count++;
+			return this.children[ch];
 		}
 
-		return root.insertWord(root.children[ch], word, scene, ++idx);
+		return this.children[ch].insertWord(word, scene, ++idx);
 	}
 
-	computePosition(root, ch)
+	computePosition(ch)
 	{
 		let pos = new THREE.Vector3();
-		pos.y = -4;
-		
-		pos.x = Math.cos(((2 * Math.PI) / 25) * root.coord.getComponent(0));
-		console.log("x: " + pos.x);
-		pos.z = Math.sin(((2 * Math.PI) / 25) * root.coord.getComponent(2));
-		console.log("z: " + pos.z);
+		pos.y = this.coord.getComponent(1) - 4;
+		pos.x = this.coord.getComponent(0) + 2 * Math.cos(((2 * Math.PI) / 25) * ch);
+		pos.z = this.coord.getComponent(2) + 2 * Math.sin(((2 * Math.PI) / 25) * ch);
 
 		return pos;
+	}
+
+	createLine(child)
+	{
+		let parentCenter = this.coord.clone();
+		parentCenter.setY(parentCenter.getComponent(1) - 0.5);
+
+		let childCenter = child.coord.clone();
+		childCenter.setY(childCenter.getComponent(1) + 0.5);
+
+		let line = new THREE.LineCurve3(parentCenter, childCenter);
+
+		let geom = new THREE.TubeGeometry(line, 1, .1);
+
+		return new THREE.Mesh(geom, new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
 	}
 }
