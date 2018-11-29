@@ -44,26 +44,25 @@
 
 			let inputText = {
 				newWord : "enter word",
-				addWord : false,
-				deletedWord : "enter word",
-				deleteWord : false
+				deletedWord : "enter word"
 			}
+
+			let addWord = { addWord:function(){
+				root.insertWord(inputText.newWord, scene)
+				render();
+			}};
+
+			let deleteWord = { deleteWord:function(){
+				root.deleteWord(inputText.deletedWord, scene)
+				render();
+			}};
 
 			let gui = new dat.GUI();
 			gui.add(inputText, "newWord");
-			gui.add(inputText, "addWord").onChange(function(newValue){
-				inputText.addWord = false;
-				root.insertWord(inputText.newWord, scene);
-				render();
-			});
+			gui.add(addWord, "addWord");
 
 			gui.add(inputText, "deletedWord");
-			gui.add(inputText, "deleteWord").onChange(function(newValue){
-				console.log("deleting " + inputText.deletedWord + "...");
-				inputText.deleteWord = false;
-				root.deleteWord(inputText.deletedWord, scene);
-				render();
-			});
+			gui.add(deleteWord, "deleteWord");
 
 			function resize()
 			{
