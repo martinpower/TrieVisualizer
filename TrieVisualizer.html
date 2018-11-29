@@ -13,7 +13,7 @@
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setPixelRatio(window.devicePixelRatio);
 
-			renderer.setClearColor(0x000000, 1);
+			renderer.setClearColor(0x9DA2AA, 1);
 			document.body.appendChild(renderer.domElement);
 
 			let scene = new THREE.Scene();
@@ -21,15 +21,16 @@
 			let aspect = window.innerWidth / window.innerHeight;
 
 			let camera = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
+			camera.position.x = 0;
 			camera.position.y = 0;
 			camera.position.z = 30;
-			camera.position.x = 0;
 			scene.add(camera);
 
-			let root = new TrieNode(0, new THREE.Vector3(0, 15, 0), scene, 80, 0);
-			root.insertWord("aardvark", scene);
-			root.insertWord("alien", scene);
-			root.insertWord("alanna", scene);
+			let light = new THREE.DirectionalLight();
+			light.position = new THREE.Vector3(0, 0, 30);
+			scene.add(light);
+
+			let root = new TrieNode(0, new THREE.Vector3(0, 15, 0), scene, 17, 0);
 
 			function render()
 			{
@@ -43,18 +44,26 @@
 			render();
 
 			let inputText = {
-				newWord : "enter word",
-				deletedWord : "enter word"
+				newWord : "",
+				deletedWord : ""
 			}
 
 			let addWord = { addWord:function(){
-				root.insertWord(inputText.newWord, scene)
-				render();
+				let words = inputText.newWord.split(" ");
+				for(let i = 0; i < words.length; i++)
+				{
+					root.insertWord(words[i], scene);
+					render();
+				}
 			}};
 
 			let deleteWord = { deleteWord:function(){
-				root.deleteWord(inputText.deletedWord, scene)
-				render();
+				let wordsToDelete = inputText.deletedWord.split(" ");
+				for(let j = 0; j < wordsToDelete.length; j++)
+				{
+					root.deleteWord(wordsToDelete[j], scene);
+					render();
+				}
 			}};
 
 			let gui = new dat.GUI();

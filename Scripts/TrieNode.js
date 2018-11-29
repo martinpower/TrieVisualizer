@@ -48,11 +48,9 @@ class TrieNode
 
 	deleteWord(word, scene)
 	{
-		console.log(word);
 		let continueDeleting = false;
 		if(word == "")
 		{
-			console.log("base case");
 			this.count = 0;
 			if(this.hasChildren())
 				return false;
@@ -62,7 +60,6 @@ class TrieNode
 		let ch = word.charCodeAt(0) - "a".charCodeAt(0);
 		if(this.children[ch] != undefined)
 		{
-			console.log("Recursing!");
 			continueDeleting = this.children[ch].deleteWord(word.slice(1, word.length), scene);
 		}
 		else
@@ -107,11 +104,16 @@ class TrieNode
 
 	createCylinder(ch, scene)
 	{
-		let cyl = new THREE.CylinderGeometry(.5, .5, 1, 50);
+		//let cyl = new THREE.CylinderGeometry(.5, .5, 1, 50);
+		let cyl = new THREE.BoxGeometry(1, 1, 1);
 		cyl.applyMatrix(new THREE.Matrix4().makeTranslation(this.coord.getComponent(0), this.coord.getComponent(1), this.coord.getComponent(2)));
 
-		let col = 10000 + (10000000 / 25) * ch;
-		this.cylinder = new THREE.Mesh(cyl, new THREE.MeshBasicMaterial({color: col}))
+		console.log(ch);
+		let col = 100000 + (10000000 / 25) * ch;
+		let tex = new THREE.TextureLoader().load("./LetterTextures/" + ch + ".png");
+		let mat = new THREE.MeshToonMaterial({specular: col, color: col, map:tex});
+		this.cylinder = new THREE.Mesh(cyl, mat);
+		
 		scene.add(this.cylinder);
 	}
 
@@ -126,8 +128,9 @@ class TrieNode
 		let line = new THREE.LineCurve3(parentCenter, childCenter);
 
 		let geom = new THREE.TubeGeometry(line, 1, .1);
+		let mat = new THREE.MeshToonMaterial({color: 0xFFFFFF});
 
-		line = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
+		line = new THREE.Mesh(geom, mat);
 		scene.add(line);
 
 		return line;
