@@ -4,8 +4,7 @@
 		<title>Trie Visualizer</title>
 		<script src="https://threejs.org/build/three.js"></script>
 		<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-		<script src="https://threejs.org/examples/js/loaders/OBJLoader.js"></script>
-		<script src="https://threejs.org/examples/js/loaders/MTLLoader.js"></script>
+		<script src="https://threejs.org/examples/js/libs/dat.gui.min.js"></script>
 		<script type="text/javascript" src="./Scripts/TrieNode.js"></script>
 		<script type="text/javascript">
 			function mainFunction()
@@ -38,14 +37,38 @@
 			}
 
 			let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
+			cameraControls.enableZoom = true;
 			cameraControls.addEventListener("change", render, false);
 
 			render();
 
+			let inputText = {
+				newWord : "enter word",
+				addWord : false,
+				deletedWord : "enter word",
+				deleteWord : false
+			}
+
+			let gui = new dat.GUI();
+			gui.add(inputText, "newWord");
+			gui.add(inputText, "addWord").onChange(function(newValue){
+				inputText.addWord = false;
+				root.insertWord(inputText.newWord, scene);
+				render();
+			});
+
+			gui.add(inputText, "deletedWord");
+			gui.add(inputText, "deleteWord").onChange(function(newValue){
+				console.log("deleting " + inputText.deletedWord + "...");
+				inputText.deleteWord = false;
+				root.deleteWord(inputText.deletedWord, scene);
+				render();
+			});
+
 			function resize()
 			{
-				renderer.setSize(window.innerWidth, window.innerHeight);
-				camera.aspect = window.innerWidth / window.innerHeight;
+				renderer.setSize(window.innerWidth - 20, window.innerHeight - 20);
+				camera.aspect = (window.innerWidth - 20) / (window.innerHeight - 20);
 				camera.updateProjectionMatrix();
 
 				render();

@@ -22,6 +22,9 @@ class TrieNode
 
 		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
 
+		if(idx == word.length)
+			return undefined;
+
 		if(this.children[ch] != undefined)
 		{
 			this.children[ch].insertWord(word, scene, ++idx);
@@ -34,15 +37,55 @@ class TrieNode
 			this.child_lines[ch] = this.createLine(this.children[ch], scene);
 		}
 
-		if(idx == word.length)
-			return undefined;
 		if(idx == word.length - 1)
 		{
-			this.children[ch].count++;
+			this.children[ch].count = 1;
 			return this.children[ch];
 		}
 
 		return this.children[ch].insertWord(word, scene, ++idx);
+	}
+
+	deleteWord(word, scene)
+	{
+		let continueDeleting = false;
+		if(word == undefined)
+		{
+			this.count = 0;
+			if(this.hasChildren())
+				return false;
+			return true;
+		}
+		
+		let ch = word.charCodeAt(0) - "a".charCodeAt(0);
+		if(this.children[ch] != undefined)
+			continueDeleting = this.children[ch].deleteWord(word.slice(1, word.length), scene);
+		else
+			return false;
+
+		if(continueDeleting)
+		{
+			scene.remove(this.children[ch].cylinder);
+			scene.remove(this.child_lines[ch]);
+			this.children[ch].cylinder.dispose();
+			this.child_lines[ch].dispose();
+
+			this.children[ch] = undefined;
+			this.child_lines[ch] = undefined;
+
+			if(this.count == 1)
+				continueDeleting = false;
+		}
+		
+		return continueDeleting;
+	}
+
+	hasChildren()
+	{
+		for(let i = 0; i < 25; i++)
+			if(this.children[i] != undefined)
+				return true;
+		return false;
 	}
 
 	computePosition(ch)
