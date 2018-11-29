@@ -48,9 +48,11 @@ class TrieNode
 
 	deleteWord(word, scene)
 	{
+		console.log(word);
 		let continueDeleting = false;
-		if(word == undefined)
+		if(word == "")
 		{
+			console.log("base case");
 			this.count = 0;
 			if(this.hasChildren())
 				return false;
@@ -59,7 +61,10 @@ class TrieNode
 		
 		let ch = word.charCodeAt(0) - "a".charCodeAt(0);
 		if(this.children[ch] != undefined)
+		{
+			console.log("Recursing!");
 			continueDeleting = this.children[ch].deleteWord(word.slice(1, word.length), scene);
+		}
 		else
 			return false;
 
@@ -67,13 +72,13 @@ class TrieNode
 		{
 			scene.remove(this.children[ch].cylinder);
 			scene.remove(this.child_lines[ch]);
-			this.children[ch].cylinder.dispose();
-			this.child_lines[ch].dispose();
 
 			this.children[ch] = undefined;
 			this.child_lines[ch] = undefined;
 
 			if(this.count == 1)
+				continueDeleting = false;
+			if(this.hasChildren())
 				continueDeleting = false;
 		}
 		
