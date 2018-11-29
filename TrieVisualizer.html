@@ -9,8 +9,12 @@
 		<script type="text/javascript">
 			function mainFunction()
 			{
+			let letters = [];
+			for(let x = 0; x < 26; x++)
+				letters[x] = new THREE.TextureLoader().load("./LetterTextures/" + x + ".png");
+
 			let renderer = new THREE.WebGLRenderer({antialias: true});
-			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setSize(window.innerWidth - 80, window.innerHeight - 80);
 			renderer.setPixelRatio(window.devicePixelRatio);
 
 			renderer.setClearColor(0x9DA2AA, 1);
@@ -21,20 +25,22 @@
 			let aspect = window.innerWidth / window.innerHeight;
 
 			let camera = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
-			camera.position.x = 0;
-			camera.position.y = 0;
-			camera.position.z = 30;
+			camera.position.x = 2;
+			camera.position.y = 12;
+			camera.position.z = 27;
 			scene.add(camera);
 
 			let light = new THREE.DirectionalLight();
-			light.position = new THREE.Vector3(0, 0, 30);
+			light.position = new THREE.Vector3(0, 20, 30);
 			scene.add(light);
 
-			let root = new TrieNode(0, new THREE.Vector3(0, 15, 0), scene, 17, 0);
+			let root = new TrieNode(0, new THREE.Vector3(0, 15, 0), scene, 50, 0, letters);
 
 			function render()
 			{
 				renderer.render(scene, camera);
+				console.log(camera.position);
+				console.log(camera.getWorldDirection());
 			}
 
 			let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -87,5 +93,9 @@
 	</script>
 	</head>
 	<body onload="mainFunction();">
+		<h1>Trie Visualizer :: Martin Power</b>
+		<div>
+
+		</div>
 	</body>
 </html>

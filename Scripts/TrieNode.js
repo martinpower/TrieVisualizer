@@ -1,18 +1,19 @@
 class TrieNode
 {
-	constructor(count, coord, scene, ch, lvl)
+	constructor(count, coord, scene, ch, lvl, letters)
 	{
 		this.count = 0;
 		this.lvl = lvl;
 		this.children = new Array(26);
 		this.child_lines = new Array(26);
+		this.letters = letters;
 
 		this.coord = coord;
 
-		this.createCylinder(ch, scene);
+		this.createCylinder(ch, scene, this.letters);
 	}
 
-	insertWord(word, scene, idx)
+	insertWord(word, scene, idx, letters)
 	{
 		// at root of trie
 		if(idx == undefined)
@@ -33,7 +34,7 @@ class TrieNode
 		else
 		{
 			let coord = this.computePosition(ch);
-			this.children[ch] = new TrieNode(0, coord, scene, ch, this.lvl + 1);
+			this.children[ch] = new TrieNode(0, coord, scene, ch, this.lvl + 1, this.letters);
 			this.child_lines[ch] = this.createLine(this.children[ch], scene);
 		}
 
@@ -102,7 +103,7 @@ class TrieNode
 		return pos;
 	}
 
-	createCylinder(ch, scene)
+	createCylinder(ch, scene, letters)
 	{
 		//let cyl = new THREE.CylinderGeometry(.5, .5, 1, 50);
 		let cyl = new THREE.BoxGeometry(1, 1, 1);
@@ -110,7 +111,9 @@ class TrieNode
 
 		console.log(ch);
 		let col = 100000 + (10000000 / 25) * ch;
-		let tex = new THREE.TextureLoader().load("./LetterTextures/" + ch + ".png");
+		let tex = undefined;
+		if(ch != 50)
+			tex = letters[ch];
 		let mat = new THREE.MeshToonMaterial({specular: col, color: col, map:tex});
 		this.cylinder = new THREE.Mesh(cyl, mat);
 		
