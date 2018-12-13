@@ -1,5 +1,19 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  	TrieNode Class															 *
+ *  		count denotes how many times that word is represented in the Trie	 *
+ *		lvl denotes how many letters are contained in the word					 *
+ *			- used to allow Trie to expand as it grows more						 *
+ *		children is an array of TrieNodes										 *
+ *		child_lines is an array of Cylinder meshes that represent the lines   	 *
+ *			which connect the nodes together									 *
+ *		letters is an array of textures used to show what letter the node		 * 
+ *			represents															 *
+ *		coord is the coordinate of the center of the node						 *
+ *		cube is the Box mesh that represents the node							 *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 class TrieNode
 {
+
 	constructor(count, coord, scene, ch, lvl, letters)
 	{
 		this.count = 0;
@@ -10,9 +24,10 @@ class TrieNode
 
 		this.coord = coord;
 
-		this.createCylinder(ch, scene, this.letters);
+		this.createCube(ch, scene, this.letters);
 	}
 
+	// uses Trie insertion algorithm to construct visual of Trie
 	insertWord(word, scene, idx, letters)
 	{
 		// at root of trie
@@ -21,10 +36,11 @@ class TrieNode
 			return this.insertWord(word, scene, 0);
 		}
 
-		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
-
 		if(idx == word.length)
 			return undefined;
+
+		// integer which maps the ascii value of a character to the range 0-25
+		let ch = word.charCodeAt(idx) - "a".charCodeAt(0);
 
 		if(this.children[ch] != undefined)
 		{
@@ -38,6 +54,7 @@ class TrieNode
 			this.child_lines[ch] = this.createLine(this.children[ch], scene);
 		}
 
+		// at end of word, so count must be set
 		if(idx == word.length - 1)
 		{
 			this.children[ch].count = 1;
@@ -47,9 +64,11 @@ class TrieNode
 		return this.children[ch].insertWord(word, scene, ++idx);
 	}
 
+	// uses Trie deletion algorithm to remove nodes and their lines from the Trie
 	deleteWord(word, scene)
 	{
 		let continueDeleting = false;
+
 		if(word == "")
 		{
 			this.count = 0;
@@ -66,9 +85,11 @@ class TrieNode
 		else
 			return false;
 
+		// only executes if a node that represents a word hasn't been found or
+		// 		no nodes which have children have been found
 		if(continueDeleting)
 		{
-			scene.remove(this.children[ch].cylinder);
+			scene.remove(this.children[ch].cube);
 			scene.remove(this.child_lines[ch]);
 
 			this.children[ch] = undefined;
@@ -83,6 +104,8 @@ class TrieNode
 		return continueDeleting;
 	}
 
+	// function which determines if a given node has any children
+	// used in deleteWord() function to determine if deletion should continue
 	hasChildren()
 	{
 		for(let i = 0; i < 25; i++)
@@ -91,6 +114,8 @@ class TrieNode
 		return false;
 	}
 
+	// maps a character to a 3D position based on the location of the parent node
+	// and what character the new node is meant to represent
 	computePosition(ch)
 	{
 		let pos = new THREE.Vector3();
@@ -103,23 +128,27 @@ class TrieNode
 		return pos;
 	}
 
-	createCylinder(ch, scene, letters)
+	// creates Cube mesh based on the letter which the node is meant to represent
+	createCube(ch, scene, letters)
 	{
-		//let cyl = new THREE.CylinderGeometry(.5, .5, 1, 50);
 		let cyl = new THREE.BoxGeometry(1, 1, 1);
 		cyl.applyMatrix(new THREE.Matrix4().makeTranslation(this.coord.getComponent(0), this.coord.getComponent(1), this.coord.getComponent(2)));
 
-		console.log(ch);
 		let col = 100000 + (10000000 / 25) * ch;
 		let tex = undefined;
+
+		// 50 is a magic number which is used to denote the root node, which does not
+		// have a letter texture
 		if(ch != 50)
 			tex = letters[ch];
+
 		let mat = new THREE.MeshToonMaterial({specular: col, color: col, map:tex});
-		this.cylinder = new THREE.Mesh(cyl, mat);
+		this.cube = new THREE.Mesh(cyl, mat);
 		
-		scene.add(this.cylinder);
+		scene.add(this.cube);
 	}
 
+	// creates Line mesh at proper location and angle to connect two nodes
 	createLine(child, scene)
 	{
 		let parentCenter = this.coord.clone();
