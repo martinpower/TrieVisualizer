@@ -1,12 +1,12 @@
 # TrieVisualizer
 
 ### To Insert a New Word
-- Type new word into "newWord" box
-- Click checkbox next to "addWord"
+- Type new word into `newWord` box
+- Click `addWord`
 	
 ### To Delete a Word from the Trie
-- Type word to be deleted into "deletedWord" box
-- Click checkbox next to "deleteWord"
+- Type word to be deleted into `deletedWord` box
+- Click `deleteWord`
 
 ### Current Tasks
 - [ ] Create basic animations
