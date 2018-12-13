@@ -2,8 +2,8 @@
 
 A visualization of the Trie data structure, commonly used to represent words.
 
-This visualizer allows you to insert/delete into a Trie, and you may insert/delete just one or multiple words at
-once. 
+This visualizer allows you to insert into or delete from a Trie, and allows you to insert/delete just one or 
+multiple words at once. 
 
 ### To Insert a New Word
 - Type new word into `newWord` box
