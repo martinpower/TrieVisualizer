@@ -1,16 +1,16 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *  	TrieNode Class															 *
- *  		count denotes how many times that word is represented in the Trie	 *
- *		lvl denotes how many letters are contained in the word					 *
- *			- used to allow Trie to expand as it grows more						 *
- *		children is an array of TrieNodes										 *
- *		child_lines is an array of Cylinder meshes that represent the lines   	 *
- *			which connect the nodes together									 *
- *		letters is an array of textures used to show what letter the node		 * 
- *			represents															 *
- *		coord is the coordinate of the center of the node						 *
- *		cube is the Box mesh that represents the node							 *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	*  	TrieNode Class																*
+	*  		count denotes how many times that word is represented in the Trie		*
+	*		lvl denotes how many letters are contained in the word					*
+	*			- used to allow Trie to expand as it grows more						*
+	*		children is an array of TrieNodes										*
+	*		child_lines is an array of Cylinder meshes that represent the lines   	*
+	*			which connect the nodes together									*
+	*		letters is an array of textures used to show what letter the node		* 
+	*			represents															*
+	*		coord is the coordinate of the center of the node						*
+	*		cube is the Box mesh that represents the node							*
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 class TrieNode
 {
 
