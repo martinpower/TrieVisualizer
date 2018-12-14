@@ -11,6 +11,8 @@
 	*		coord is the coordinate of the center of the node						*
 	*		cube is the Box mesh that represents the node							*
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+var coords = {};
 class TrieNode
 {
 
@@ -94,6 +96,7 @@ class TrieNode
 
 			this.children[ch] = undefined;
 			this.child_lines[ch] = undefined;
+			coords[this.coord] = false;
 
 			if(this.count == 1)
 				continueDeleting = false;
@@ -125,6 +128,13 @@ class TrieNode
 		pos.x = (this.coord.getComponent(0) + 1) + 4 * Math.sin(2 * map);
 		pos.z = (this.coord.getComponent(2) + 1) + 4 * Math.cos(2 * map);
 
+		while(coords[new THREE.Vector3(pos.x, pos.y, pos.z)])
+		{
+			pos.x += 1.0;
+			pos.z += 1.0;
+		}
+
+		coords[new THREE.Vector3(pos.x, pos.y, pos.z)] = true;
 		return pos;
 	}
 
@@ -144,7 +154,7 @@ class TrieNode
 
 		let mat = new THREE.MeshToonMaterial({specular: col, color: col, map:tex});
 		this.cube = new THREE.Mesh(cyl, mat);
-		
+
 		scene.add(this.cube);
 	}
 
