@@ -130,6 +130,7 @@ class TrieNode
 
 		while(coords[new THREE.Vector3(pos.x, pos.y, pos.z)])
 		{
+			console.log("collision found!");
 			pos.x += 1.0;
 			pos.z += 1.0;
 		}
