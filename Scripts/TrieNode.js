@@ -12,7 +12,8 @@
 	*		cube is the Box mesh that represents the node							*
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-var coords = {};
+var boxes = {};
+var numBoxes = {};
 class TrieNode
 {
 
@@ -96,7 +97,6 @@ class TrieNode
 
 			this.children[ch] = undefined;
 			this.child_lines[ch] = undefined;
-			coords[this.coord] = false;
 
 			if(this.count == 1)
 				continueDeleting = false;
@@ -128,22 +128,41 @@ class TrieNode
 		pos.x = (this.coord.getComponent(0) + 1) + 4 * Math.sin(2 * map);
 		pos.z = (this.coord.getComponent(2) + 1) + 4 * Math.cos(2 * map);
 
-		while(coords[new THREE.Vector3(pos.x, pos.y, pos.z)])
-		{
-			console.log("collision found!");
-			pos.x += 1.0;
-			pos.z += 1.0;
-		}
-
-		coords[new THREE.Vector3(pos.x, pos.y, pos.z)] = true;
 		return pos;
 	}
 
 	// creates Cube mesh based on the letter which the node is meant to represent
 	createCube(ch, scene, letters)
 	{
-		let cyl = new THREE.BoxGeometry(1, 1, 1);
-		cyl.applyMatrix(new THREE.Matrix4().makeTranslation(this.coord.getComponent(0), this.coord.getComponent(1), this.coord.getComponent(2)));
+		let cube = new THREE.BoxGeometry(1, 1, 1);
+		cube.applyMatrix(new THREE.Matrix4().makeTranslation(this.coord.getComponent(0), this.coord.getComponent(1), this.coord.getComponent(2)));
+		cube.computeBoundingBox();
+
+		if(numBoxes[this.lvl] == undefined)
+		{
+			numBoxes[this.lvl] = 1;
+			boxes[this.lvl] = [];
+			boxes[this.lvl][0] = cube.boundingBox;
+		}
+		else
+		{
+			let newCh = ch + 1;
+			for(let i = 0; i < numBoxes[this.lvl]; i++)
+			{
+				if(cube.boundingBox.intersectsBox(boxes[this.lvl][i]))
+				{
+					cube.applyMatrix(new THREE.Matrix4().makeTranslation(-this.coord.getComponent(0), -this.coord.getComponent(1), -this.coord.getComponent(2)));
+					console.log("collision!");
+					let newCoord = this.computePosition(newCh++);
+					cube.applyMatrix(new THREE.Matrix4().makeTranslation(newCoord.getComponent(0), newCoord.getComponent(1), newCoord.getComponent(2)));
+					this.coord = newCoord;
+					i = 0;
+				}
+			}
+			boxes[this.lvl][numBoxes[this.lvl]] = cube.boundingBox;
+			numBoxes[this.lvl]++;
+		}
+
 
 		let col = 100000 + (10000000 / 25) * ch;
 		let tex = undefined;
@@ -154,7 +173,7 @@ class TrieNode
 			tex = letters[ch];
 
 		let mat = new THREE.MeshToonMaterial({specular: col, color: col, map:tex});
-		this.cube = new THREE.Mesh(cyl, mat);
+		this.cube = new THREE.Mesh(cube, mat);
 
 		scene.add(this.cube);
 	}
