@@ -16,4 +16,5 @@ multiple words at once.
 ### Current Tasks
 - [ ] Create basic animations
 - [ ] Prevent nodes from overlapping
+	- The HashSet method didn't work, try out using bounding boxes to detect collisions
 - [ ] Create Wizard animations
